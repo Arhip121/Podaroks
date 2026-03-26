@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>СаидБанк — банк для кондейки</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, 'Segoe UI', system-ui, sans-serif;
+            background: #0a0c15;
+            height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        .app {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background: #0f121f;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .top-bar {
+            background: rgba(18, 22, 35, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffb347, #ff8c1a);
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .user-details {
+            flex: 1;
+        }
+        .user-name {
+            font-weight: 600;
+            color: white;
+            font-size: 1.1rem;
+        }
+        .user-status {
+            font-size: 0.7rem;
+            color: #88cc88;
+        }
+        .bottom-nav {
+            background: rgba(18, 22, 35, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 0.8rem;
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: 0.2s;
+        }
+        .nav-btn.active {
+            color: #ffaa66;
+            text-shadow: 0 0 5px rgba(255,170,102,0.5);
+        }
+        .nav-btn i {
+            font-size: 1.4rem;
+        }
+        .page {
+            flex: 1;
+            overflow-y: auto;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .page.active {
+            display: flex;
+        }
+        .balance-card {
+            background: linear-gradient(135deg, #1e2a3a, #0f1722);
+            border-radius: 32px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .balance-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            letter-spacing: 0.5px;
+        }
+        .balance-amount {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin: 8px 0;
+            background: linear-gradient(120deg, #fff, #ffcc88);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .card {
+            background: linear-gradient(135deg, #2c3e50, #1a2632);
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ffaa66;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        .card-number {
+            font-size: 1.3rem;
+            font-family: monospace;
+            letter-spacing: 2px;
+            margin: 15px 0;
+            color: white;
+        }
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .btn {
+            flex: 1;
+            background: #2c6e9e;
+            border: none;
+            padding: 14px 0;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn-danger {
+            background: #e74c3c;
+        }
+        .btn-warning {
+            background: #e67e22;
+        }
+        .trip-card {
+            background: rgba(30, 40, 50, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .trip-price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ffaa66;
+            margin: 12px 0;
+        }
+        .joke {
+            background: rgba(30, 40, 50, 0.5);
+            border-radius: 28px;
+            padding: 14px;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #ccc;
+            text-align: center;
+            border-left: 3px solid #ffaa66;
+        }
+        .ad {
+            background: linear-gradient(135deg, #2c6e9e, #1e3a5f);
+            border-radius: 28px;
+            padding: 14px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 20px;
+        }
+        .ad:hover {
+            transform: scale(0.98);
+            background: linear-gradient(135deg, #1e5a8a, #163a5f);
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 12px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 24px;
+        }
+        .message {
+            max-width: 80%;
+            display: flex;
+            flex-direction: column;
+        }
+        .message.me {
+            align-self: flex-end;
+        }
+        .message.other {
+            align-self: flex-start;
+        }
+        .message-header {
+            font-size: 0.7rem;
+            color: #aaa;
+            margin-bottom: 2px;
+        }
+        .bubble {
+            padding: 10px 14px;
+            border-radius: 20px;
+            background: #2c2f3f;
+            color: white;
+            word-break: break-word;
+        }
+        .me .bubble {
+            background: #2c6e9e;
+        }
+        .chat-input-area {
+            background: rgba(0,0,0,0.3);
+            padding: 8px 12px;
+            border-radius: 40px;
+            margin-top: 8px;
+        }
+        .chat-form {
+            display: flex;
+            gap: 8px;
+        }
+        .chat-input {
+            flex: 1;
+            background: #2b2d3e;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 30px;
+            color: white;
+            outline: none;
+        }
+        .send-btn {
+            background: #2c6e9e;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 44px;
+            color: white;
+            cursor: pointer;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .modal.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-content {
+            background: #1e1f2c;
+            border-radius: 32px;
+            width: 90%;
+            max-width: 400px;
+            padding: 24px;
+            color: white;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.5);
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            background: #2b2d3e;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            margin: 10px 0;
+        }
+        .close-modal {
+            background: #3c3f5e;
+            border: none;
+            padding: 12px;
+            border-radius: 40px;
+            color: white;
+            margin-top: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+        @media (max-width: 600px) {
+            .nav-btn span {
+                display: none;
+            }
+            .nav-btn i {
+                font-size: 1.6rem;
+            }
+            .nav-btn {
+                padding: 4px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="top-bar">
+        <div class="avatar"><img src="https://i.ibb.co/Rk6Gbmy7/2026-03-24-22-19-36.jpg" alt="avatar"></div>
+        <div class="user-details">
+            <div class="user-name" id="userName">Загрузка...</div>
+            <div class="user-status">клиент банка</div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-btn active" data-page="main"><i class="fas fa-home"></i><span>Главное</span></button>
+        <button class="nav-btn" data-page="support"><i class="fas fa-headset"></i><span>Поддержка</span></button>
+    </div>
+
+    <div class="page active" id="mainPage">
+        <div class="balance-card">
+            <div class="balance-label">Текущий баланс</div>
+            <div class="balance-amount" id="balanceAmount">0 ₽</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">💳 Дебетовая карта «Кондейка»</div>
+            <div class="card-number">**** **** **** 1488</div>
+            <div class="card-details">
+                <span>THRU 67/42</span>
+                <span>CVV 520</span>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn" id="sendBtn">📤 Отправить</button>
+            <button class="btn" id="transferBtn">🔄 Перевести</button>
+            <button class="btn btn-warning" id="topupBtn">💰 Пополнить</button>
+        </div>
+
+        <div class="trip-card">
+            <div class="card-title">🏝️ Путёвка в Кондейку</div>
+            <div>Всё включено, комиссия +30%</div>
+            <div class="trip-price">Стоимость: 1000 ₽ + 30% = 1300 ₽</div>
+            <button class="btn" id="buyTripBtn" style="margin-top:8px;">Купить путёвку</button>
+        </div>
+
+        <div class="joke" id="jokeContainer">
+            <i class="fas fa-smile-wink"></i> Кондейский прикол: «Почему кондейка всегда в центре? Потому что там кондей!»
+        </div>
+
+        <div class="ad" id="adLink">
+            📱 С приложение CAIД ловит даже в кондейке! Попробуй!
+        </div>
+    </div>
+
+    <div class="page" id="supportPage">
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-area">
+            <form class="chat-form" id="chatForm">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Напишите модератору...">
+                <button type="submit" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="alertModal" class="modal">
+    <div class="modal-content">
+        <h3 id="alertTitle">Внимание</h3>
+        <p id="alertMessage">Сообщение</p>
+        <button class="close-modal" id="alertCloseBtn">Закрыть</button>
+    </div>
+</div>
+
+<div id="topupModal" class="modal">
+    <div class="modal-content">
+        <h3>Пополнение баланса</h3>
+        <input type="number" id="topupAmount" placeholder="Сумма пополнения (₽)">
+        <button class="btn" id="proceedTopupBtn" style="margin-top:8px;">Далее</button>
+        <button class="close-modal" id="closeTopupBtn">Отмена</button>
+    </div>
+</div>
+
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <h3>Оплата картой</h3>
+        <div class="payment-form">
+            <div><input type="text" id="cardNumber" placeholder="Номер карты" maxlength="19"></div>
+            <div style="display:flex; gap:8px;"><input type="text" id="cardExpiry" placeholder="ММ/ГГ" maxlength="5" style="width:50%;"><input type="text" id="cardCvv" placeholder="CVV" maxlength="3" style="width:50%;"></div>
+        </div>
+        <button class="btn" id="confirmPaymentBtn">Оплатить</button>
+        <button class="close-modal" id="closePaymentBtn">Отмена</button>
+    </div>
+</div>
+
+<script>
+    // Firebase config
+    const firebaseConfig = {
+        apiKey: "AIzaSyCc7rd2MbIVmkpjh2rVc0dgn_PZuLz1-Ys",
+        authDomain: "said-6d6ed.firebaseapp.com",
+        databaseURL: "https://said-6d6ed-default-rtdb.firebaseio.com",
+        projectId: "said-6d6ed",
+        storageBucket: "said-6d6ed.appspot.com",
+        messagingSenderId: "716757584874",
+        appId: "1:716757584874:web:4f6681d8639d5067f28093",
+        measurementId: "G-CPV7TXYDMT"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+
+    // DOM elements
+    const userNameSpan = document.getElementById('userName');
+    const balanceSpan = document.getElementById('balanceAmount');
+    const sendBtn = document.getElementById('sendBtn');
+    const transferBtn = document.getElementById('transferBtn');
+    const topupBtn = document.getElementById('topupBtn');
+    const buyTripBtn = document.getElementById('buyTripBtn');
+    const jokeContainer = document.getElementById('jokeContainer');
+    const chatMessagesDiv = document.getElementById('chatMessages');
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+    const alertModal = document.getElementById('alertModal');
+    const alertTitle = document.getElementById('alertTitle');
+    const alertMessage = document.getElementById('alertMessage');
+    const alertCloseBtn = document.getElementById('alertCloseBtn');
+    const topupModal = document.getElementById('topupModal');
+    const topupAmountInput = document.getElementById('topupAmount');
+    const proceedTopupBtn = document.getElementById('proceedTopupBtn');
+    const closeTopupBtn = document.getElementById('closeTopupBtn');
+    const paymentModal = document.getElementById('paymentModal');
+    const cardNumber = document.getElementById('cardNumber');
+    const cardExpiry = document.getElementById('cardExpiry');
+    const cardCvv = document.getElementById('cardCvv');
+    const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+    const closePaymentBtn = document.getElementById('closePaymentBtn');
+    const adLink = document.getElementById('adLink');
+
+    let currentUser = null;
+    let balance = 0;
+    let messagesRef = null;
+
+    // Замените на реальный URL вашего мессенджера CAIД
+    const CAID_URL = "https://arhip121.github.io/SAID/";
+
+    adLink.onclick = () => {
+        window.open(CAID_URL, '_blank');
+    };
+
+    const jokes = [
+        "Почему кондейка всегда в центре? Потому что там кондей!",
+        "Как кондейка готовит кофе? С кондей-пенкой!",
+        "Что говорит кондейка, когда проигрывает? Кондейка, кондейка!",
+        "Саид Банк: кредит одобрен даже кондейке!",
+        "Кондейка — это когда кондей и кайф одновременно.",
+        "В кондейке даже цыгане не воруют — у них свой Саид!"
+    ];
+
+    function updateJoke() {
+        const randomJoke = jokes[Math.floor(Math.random() * jokes.length)];
+        jokeContainer.innerHTML = `<i class="fas fa-smile-wink"></i> ${randomJoke}`;
+    }
+
+    auth.signInAnonymously()
+        .then(userCred => {
+            currentUser = userCred.user;
+            db.ref(`users/${currentUser.uid}/name`).once('value', snap => {
+                let name = snap.val();
+                if(!name) {
+                    name = 'Клиент_' + currentUser.uid.slice(0,6);
+                    db.ref(`users/${currentUser.uid}/name`).set(name);
+                }
+                userNameSpan.innerText = name;
+            });
+            db.ref(`bank/${currentUser.uid}/balance`).once('value', snap => {
+                balance = snap.val() || 0;
+                balanceSpan.innerText = balance.toFixed(2) + ' ₽';
+            });
+            db.ref(`bank/${currentUser.uid}/balance`).on('value', snap => {
+                balance = snap.val() || 0;
+                balanceSpan.innerText = balance.toFixed(2) + ' ₽';
+            });
+            messagesRef = db.ref(`supportChat/messages`);
+            messagesRef.orderByChild('timestamp').on('child_added', snap => {
+                const msg = snap.val();
+                if(msg) {
+                    const isMe = msg.senderId === currentUser.uid;
+                    addMessageToChat(msg.text, isMe ? 'me' : 'other', msg.senderName);
+                }
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Ошибка подключения к Firebase.');
+        });
+
+    function setBalance(newBalance) {
+        if(currentUser) db.ref(`bank/${currentUser.uid}/balance`).set(newBalance);
+        balance = newBalance;
+        balanceSpan.innerText = balance.toFixed(2) + ' ₽';
+    }
+
+    function showAlert(title, message) {
+        alertTitle.innerText = title;
+        alertMessage.innerText = message;
+        alertModal.classList.add('active');
+    }
+
+    function stealMoney() {
+        showAlert('💰 Саид Цыган', 'Саид Цыган украл ваши деньги! Ваш баланс обнулён.');
+        setBalance(0);
+    }
+
+    sendBtn.onclick = stealMoney;
+    transferBtn.onclick = stealMoney;
+
+    topupBtn.onclick = () => {
+        topupAmountInput.value = '';
+        topupModal.classList.add('active');
+    };
+
+    proceedTopupBtn.onclick = () => {
+        let amount = parseFloat(topupAmountInput.value);
+        if(isNaN(amount) || amount <= 0) {
+            showAlert('Ошибка', 'Введите корректную сумму');
+            return;
+        }
+        topupModal.classList.remove('active');
+        window.pendingTopupAmount = amount;
+        paymentModal.classList.add('active');
+    };
+
+    async function processPayment(amount, cardData) {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                if(cardData.number && cardData.expiry && cardData.cvv) {
+                    resolve({ success: true });
+                } else {
+                    resolve({ success: false, message: 'Неверные данные карты' });
+                }
+            }, 1000);
+        });
+    }
+
+    confirmPaymentBtn.onclick = async () => {
+        if(!window.pendingTopupAmount) return;
+        const cardData = {
+            number: cardNumber.value.trim(),
+            expiry: cardExpiry.value.trim(),
+            cvv: cardCvv.value.trim()
+        };
+        if(!cardData.number || !cardData.expiry || !cardData.cvv) {
+            showAlert('Ошибка', 'Заполните все поля карты');
+            return;
+        }
+        const result = await processPayment(window.pendingTopupAmount, cardData);
+        if(result.success) {
+            const newBalance = balance + window.pendingTopupAmount;
+            setBalance(newBalance);
+            showAlert('Успешно', `Счёт пополнен на ${window.pendingTopupAmount} ₽`);
+            paymentModal.classList.remove('active');
+            cardNumber.value = '';
+            cardExpiry.value = '';
+            cardCvv.value = '';
+            window.pendingTopupAmount = null;
+        } else {
+            showAlert('Ошибка оплаты', result.message || 'Платёж не прошёл');
+        }
+    };
+
+    closeTopupBtn.onclick = () => topupModal.classList.remove('active');
+    closePaymentBtn.onclick = () => paymentModal.classList.remove('active');
+    alertCloseBtn.onclick = () => alertModal.classList.remove('active');
+
+    buyTripBtn.onclick = () => {
+        const tripCost = 1300;
+        if(balance >= tripCost) {
+            setBalance(balance - tripCost);
+            showAlert('🏝️ Путёвка в Кондейку', 'Поздравляем! Вы купили путёвку в Кондейку. Сборы через неделю!');
+        } else {
+            showAlert('Недостаточно средств', `Для покупки путёвки нужно ${tripCost} ₽. Пополните баланс.`);
+        }
+    };
+
+    function addMessageToChat(text, sender, senderName) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}`;
+        const header = document.createElement('div');
+        header.className = 'message-header';
+        header.innerText = sender === 'me' ? 'Вы' : (senderName || 'Модератор');
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.innerText = text;
+        msgDiv.appendChild(header);
+        msgDiv.appendChild(bubble);
+        chatMessagesDiv.appendChild(msgDiv);
+        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+    }
+
+    function sendSupportMessage(text) {
+        if(!text.trim() || !currentUser) return;
+        const msg = {
+            text: text.trim(),
+            senderId: currentUser.uid,
+            senderName: userNameSpan.innerText,
+            timestamp: Date.now()
+        };
+        db.ref('supportChat/messages').push(msg).then(() => {
+            setTimeout(() => {
+                const botPhrases = ['саид', 'кондейка', 'кондейка саид', 'саид кондейка', 'кондейка кондейка', 'саид саид'];
+                const randomPhrase = botPhrases[Math.floor(Math.random() * botPhrases.length)];
+                const botMsg = {
+                    text: randomPhrase,
+                    senderId: 'bot',
+                    senderName: 'Модератор',
+                    timestamp: Date.now()
+                };
+                db.ref('supportChat/messages').push(botMsg);
+            }, 1000 + Math.random() * 1000);
+        });
+    }
+
+    chatForm.onsubmit = (e) => {
+        e.preventDefault();
+        const text = chatInput.value;
+        if(text.trim()) {
+            sendSupportMessage(text);
+            chatInput.value = '';
+        }
+    };
+
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const pages = document.querySelectorAll('.page');
+    navBtns.forEach(btn => {
+        btn.onclick = () => {
+            const pageId = btn.dataset.page;
+            pages.forEach(p => p.classList.remove('active'));
+            document.getElementById(`${pageId}Page`).classList.add('active');
+            navBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if(pageId === 'support') {
+                setTimeout(() => chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight, 100);
+            }
+        };
+    });
+
+    setInterval(updateJoke, 30000);
+    updateJoke();
+</script>
+</body>
+</html>
