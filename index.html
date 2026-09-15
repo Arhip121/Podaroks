@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f7f3ec">
+<title>Маме</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :root {
+    --cream: #f7f3ec;
+    --gold: #b8925a;
+    --gold-soft: #d4b183;
+    --deep: #2c241b;
+    --muted: #6b5f52;
+    --mx: 50vw;
+    --my: 50vh;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  html {
+    overflow-x: hidden;
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    color: var(--deep);
+    background: var(--cream);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    width: 100%;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body.gift-mode {
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: -20%;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(184, 146, 90, 0.18), transparent 45%),
+      radial-gradient(circle at 80% 20%, rgba(212, 177, 131, 0.22), transparent 50%),
+      radial-gradient(circle at 60% 80%, rgba(184, 146, 90, 0.15), transparent 55%),
+      radial-gradient(circle at 30% 90%, rgba(212, 177, 131, 0.2), transparent 50%);
+    animation: drift 22s ease-in-out infinite alternate;
+    z-index: -2;
+    will-change: transform;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle, rgba(184, 146, 90, 0.25) 1px, transparent 1.5px);
+    background-size: 42px 42px;
+    opacity: 0.3;
+    animation: fadeDots 30s linear infinite;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  @keyframes drift {
+    0%   { transform: translate(0, 0) scale(1); }
+    50%  { transform: translate(-3%, 2%) scale(1.05); }
+    100% { transform: translate(3%, -2%) scale(1.02); }
+  }
+
+  @keyframes fadeDots {
+    0%   { background-position: 0 0; }
+    100% { background-position: 42px 84px; }
+  }
+
+  .flora {
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 220px;
+    pointer-events: none;
+    z-index: 0;
+    color: var(--gold);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 50px 0;
+    opacity: 0.42;
+    filter: drop-shadow(0 8px 22px rgba(184, 146, 90, 0.25));
+  }
+
+  .flora-left { left: -40px; align-items: flex-start; }
+  .flora-right { right: -40px; align-items: flex-end; }
+
+  .flora-svg {
+    width: 150px;
+    height: auto;
+    max-height: 44vh;
+    display: block;
+  }
+
+  .flora-rose {
+    transform-origin: center bottom;
+    animation: swayRose 10s ease-in-out infinite alternate;
+  }
+
+  .flora-tulip {
+    transform-origin: center bottom;
+    animation: swayTulip 12s ease-in-out infinite alternate;
+  }
+
+  .flora-right .flora-rose {
+    animation-name: swayRoseR;
+    animation-duration: 11s;
+  }
+
+  .flora-right .flora-tulip {
+    animation-name: swayTulipR;
+    animation-duration: 13s;
+  }
+
+  @keyframes swayRose {
+    0%   { transform: rotate(-9deg) translateY(0); }
+    100% { transform: rotate(-3deg) translateY(-8px); }
+  }
+  @keyframes swayTulip {
+    0%   { transform: rotate(10deg) translateY(-6px); }
+    100% { transform: rotate(4deg) translateY(2px); }
+  }
+  @keyframes swayRoseR {
+    0%   { transform: rotate(9deg) translateY(0); }
+    100% { transform: rotate(3deg) translateY(-8px); }
+  }
+  @keyframes swayTulipR {
+    0%   { transform: rotate(-10deg) translateY(-6px); }
+    100% { transform: rotate(-4deg) translateY(2px); }
+  }
+
+  .cursor-halo {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 620px;
+    height: 620px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(184, 146, 90, 0.16), rgba(212, 177, 131, 0.08) 30%, transparent 65%);
+    transform: translate3d(calc(var(--mx) - 310px), calc(var(--my) - 310px), 0);
+    z-index: 0;
+    will-change: transform;
+  }
+
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    z-index: 60;
+    pointer-events: none;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--gold-soft), var(--gold));
+    box-shadow: 0 0 14px rgba(184, 146, 90, 0.6);
+    transition: width 0.12s linear;
+  }
+
+  .gift-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 50% 45%, rgba(212, 177, 131, 0.35), transparent 55%),
+      var(--cream);
+    transition: opacity 0.7s ease, visibility 0.7s ease;
+    overflow: hidden;
+  }
+
+  .gift-overlay.opened {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .gift-scene {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 46px;
+    padding: 20px;
+  }
+
+  .gift-text {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    animation: fadeUp 1.4s ease-out 0.4s both;
+    padding-left: 0.18em;
+  }
+
+  .gift-box {
+    position: relative;
+    width: 150px;
+    height: 140px;
+    cursor: pointer;
+    animation: giftFloat 3s ease-in-out infinite;
+    transform-origin: center 80%;
+  }
+
+  .gift-box::before {
+    content: '';
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    width: 180px;
+    height: 26px;
+    margin-left: -90px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(184, 146, 90, 0.35), transparent 70%);
+    filter: blur(4px);
+    animation: shadowPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes giftFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50%      { transform: translateY(-10px) rotate(-1.5deg); }
+  }
+
+  @keyframes shadowPulse {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50%      { transform: scale(0.85); opacity: 0.45; }
+  }
+
+  .gift-body {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 96px;
+    background: linear-gradient(135deg, #d9bc8d 0%, #b8925a 55%, #a17d47 100%);
+    border-radius: 6px;
+    box-shadow:
+      0 20px 40px rgba(44, 36, 27, 0.22),
+      inset -12px -12px 30px rgba(90, 60, 20, 0.25),
+      inset 12px 12px 30px rgba(255, 245, 220, 0.35);
+  }
+
+  .gift-lid {
+    position: absolute;
+    top: 0;
+    left: -8px;
+    width: calc(100% + 16px);
+    height: 48px;
+    background: linear-gradient(135deg, #e5c99c 0%, #c8a673 55%, #b8925a 100%);
+    border-radius: 6px;
+    box-shadow:
+      0 10px 22px rgba(44, 36, 27, 0.22),
+      inset 0 3px 8px rgba(255, 245, 220, 0.4);
+    z-index: 4;
+    transform-origin: center bottom;
+    transition: transform 1s cubic-bezier(0.5, 1.4, 0.4, 1), opacity 0.9s ease 0.4s;
+  }
+
+  .gift-ribbon-v {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 24px;
+    margin-left: -12px;
+    background: linear-gradient(90deg, #ece1c8 0%, #f7f3ec 50%, #ece1c8 100%);
+    box-shadow: 0 0 12px rgba(255, 250, 240, 0.5), inset 0 0 8px rgba(184, 146, 90, 0.15);
+    z-index: 5;
+    transition: opacity 0.6s ease, transform 0.9s ease;
+  }
+
+  .gift-ribbon-h {
+    position: absolute;
+    top: 48px;
+    left: 0;
+    right: 0;
+    height: 24px;
+    margin-top: -12px;
+    background: linear-gradient(0deg, #ece1c8 0%, #f7f3ec 50%, #ece1c8 100%);
+    box-shadow: 0 0 12px rgba(255, 250, 240, 0.5), inset 0 0 8px rgba(184, 146, 90, 0.15);
+    z-index: 5;
+    transition: opacity 0.6s ease, transform 0.9s ease;
+  }
+
+  .gift-bow {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    width: 70px;
+    height: 40px;
+    margin-left: -35px;
+    z-index: 6;
+    transition: transform 1s cubic-bezier(0.5, 1.4, 0.4, 1), opacity 0.9s ease 0.2s;
+  }
+
+  .gift-bow::before,
+  .gift-bow::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    width: 34px;
+    height: 28px;
+    background: linear-gradient(135deg, #ece1c8, #d4b183);
+    border-radius: 50% 20% 50% 20%;
+    box-shadow: inset -2px -2px 8px rgba(90, 60, 20, 0.15);
+  }
+
+  .gift-bow::before { left: 0; transform: rotate(-22deg); }
+  .gift-bow::after  { right: 0; transform: rotate(22deg) scaleX(-1); }
+
+  .gift-knot {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    margin-left: -9px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #f7f3ec, #d4b183);
+    box-shadow: 0 2px 6px rgba(90, 60, 20, 0.25);
+    z-index: 7;
+  }
+
+  .gift-glow {
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 240, 200, 0.95), rgba(212, 177, 131, 0.5) 35%, transparent 70%);
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+    transform: scale(0.2);
+    transition: opacity 1s ease, transform 1.4s cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+
+  .gift-rays {
+    position: absolute;
+    width: 180vmax;
+    height: 180vmax;
+    border-radius: 50%;
+    background: repeating-conic-gradient(
+      from 0deg,
+      transparent 0deg 7deg,
+      rgba(212, 177, 131, 0.55) 7deg 9deg,
+      transparent 9deg 16deg
+    );
+    -webkit-mask: radial-gradient(circle, #000 5%, transparent 55%);
+    mask: radial-gradient(circle, #000 5%, transparent 55%);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transform: scale(0.1);
+    transition: opacity 1.2s ease, transform 1.6s cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+
+  .gift-overlay.opening .gift-box {
+    animation: giftShake 0.55s ease-in-out;
+  }
+
+  @keyframes giftShake {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    20%      { transform: translate(-4px, -3px) rotate(-3deg); }
+    40%      { transform: translate(4px, -5px) rotate(3deg); }
+    60%      { transform: translate(-3px, -2px) rotate(-2deg); }
+    80%      { transform: translate(3px, -4px) rotate(2deg); }
+  }
+
+  .gift-overlay.opening .gift-lid {
+    transform: translateY(-170px) rotate(-32deg);
+    opacity: 0;
+  }
+
+  .gift-overlay.opening .gift-bow {
+    transform: translateY(-240px) rotate(60deg) scale(0.3);
+    opacity: 0;
+  }
+
+  .gift-overlay.opening .gift-ribbon-v,
+  .gift-overlay.opening .gift-ribbon-h {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+
+  .gift-overlay.opening .gift-glow {
+    opacity: 1;
+    transform: scale(1.6);
+    transition-delay: 0.4s;
+  }
+
+  .gift-overlay.opening .gift-rays {
+    opacity: 1;
+    transform: scale(1);
+    transition-delay: 0.3s;
+    animation: raysSpin 14s linear infinite;
+  }
+
+  @keyframes raysSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .gift-overlay.opening .gift-text {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  section, header.hero, .finale {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero {
+    min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: calc(40px + var(--safe-top)) 20px calc(40px + var(--safe-bottom));
+  }
+
+  .hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    will-change: transform, opacity;
+  }
+
+  .ornament {
+    width: 90px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto;
+  }
+
+  .hero-top {
+    font-family: 'Georgia', serif;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    font-size: 11px;
+    color: var(--gold);
+    margin-bottom: 22px;
+    padding-left: 0.5em;
+    opacity: 0;
+  }
+
+  .hero .ornament {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+
+  .hero h1 {
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-size: clamp(40px, 11vw, 110px);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: 0.01em;
+    color: var(--deep);
+    opacity: 0;
+  }
+
+  .hero h1 .accent {
+    font-style: italic;
+    color: var(--gold);
+    display: block;
+    margin-top: 8px;
+  }
+
+  .hero-sub {
+    font-size: clamp(15px, 4vw, 19px);
+    font-family: 'Georgia', serif;
+    color: var(--muted);
+    max-width: 520px;
+    margin: 26px auto 0;
+    line-height: 1.7;
+    font-style: italic;
+    opacity: 0;
+  }
+
+  .number {
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-size: clamp(72px, 20vw, 150px);
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+    margin: 16px 0 4px;
+    opacity: 0;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: calc(28px + var(--safe-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Georgia', serif;
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding-left: 0.35em;
+    opacity: 0;
+    z-index: 2;
+  }
+
+  .scroll-hint::after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 34px;
+    background: linear-gradient(var(--gold), transparent);
+    margin: 10px auto 0;
+    animation: pulseLine 2.4s ease-in-out infinite;
+  }
+
+  body.revealed .hero-top { animation: fadeUp 1.2s ease-out 0.2s both; }
+  body.revealed .hero .ornament { animation: growLine 1.6s ease-out 0.4s both; }
+  body.revealed .number { animation: fadeUp 1.4s ease-out 0.7s both; }
+  body.revealed .hero h1 { animation: fadeUp 1.4s ease-out 0.55s both; }
+  body.revealed .hero-sub { animation: fadeUp 1.4s ease-out 0.9s both; }
+  body.revealed .scroll-hint { animation: fadeUp 1.6s ease-out 1.3s both; }
+
+  @keyframes growLine {
+    from { transform: scaleX(0); opacity: 0; }
+    to   { transform: scaleX(1); opacity: 1; }
+  }
+
+  @keyframes pulseLine {
+    0%, 100% { opacity: 0.4; transform: scaleY(0.7); }
+    50%      { opacity: 1; transform: scaleY(1); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  section { padding: 90px 0; }
+
+  .section-title {
+    text-align: center;
+    margin-bottom: 56px;
+    padding: 0 20px;
+  }
+
+  .section-title h2 {
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-size: clamp(30px, 8vw, 52px);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    margin-bottom: 18px;
+  }
+
+  .section-title p {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 560px;
+    margin: 18px auto 0;
+    line-height: 1.7;
+  }
+
+  .letter {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 0 24px;
+  }
+
+  .letter p {
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-size: clamp(18px, 5vw, 24px);
+    line-height: 1.85;
+    color: var(--deep);
+    margin-bottom: 26px;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+
+  .letter p.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .letter p.sig {
+    font-style: italic;
+    color: var(--gold);
+    font-size: clamp(20px, 5.5vw, 26px);
+    margin-top: 36px;
+  }
+
+  .gallery-wrap { position: relative; }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 28px;
+    padding: 0 32px;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .photo {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #ede5d6, #d9cdb8);
+    box-shadow: 0 18px 44px rgba(44, 36, 27, 0.16);
+    opacity: 0;
+    transform: translateY(40px) scale(0.96);
+    transition: opacity 1.1s ease, transform 1.1s ease, box-shadow 0.6s ease;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .photo.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 1.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+
+  .photo:hover img { transform: scale(1.05); }
+
+  .photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(184, 146, 90, 0.35);
+    pointer-events: none;
+    transition: border-color 0.4s ease;
+  }
+
+  .photo:hover::after { border-color: rgba(184, 146, 90, 0.9); }
+
+  .photo .placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .photo .tap-hint {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(247, 243, 236, 0.65);
+    background: rgba(44, 36, 27, 0.32);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    pointer-events: none;
+    opacity: 0.8;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .photo .tap-hint::before,
+  .photo .tap-hint::after {
+    content: '';
+    position: absolute;
+    background: #f7f3ec;
+    left: 50%;
+    top: 50%;
+  }
+
+  .photo .tap-hint::before { width: 1px; height: 13px; transform: translate(-50%, -50%); }
+  .photo .tap-hint::after  { width: 13px; height: 1px; transform: translate(-50%, -50%); }
+
+  .photo:hover .tap-hint { opacity: 1; transform: scale(1.1); }
+
+  .seal-wrap {
+    display: grid;
+    place-items: center;
+    padding: 40px 20px;
+    min-height: 280px;
+    position: relative;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .seal {
+    grid-area: 1 / 1;
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    background: radial-gradient(circle at 35% 30%, #ddbd8e, #b8925a 65%, #96744a);
+    color: #f7f3ec;
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-size: 42px;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+      0 14px 34px rgba(184, 146, 90, 0.4),
+      inset 0 2px 6px rgba(255, 255, 255, 0.35),
+      inset 0 -4px 10px rgba(90, 60, 20, 0.3);
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.6s ease, box-shadow 0.4s ease;
+    z-index: 2;
+    padding: 0;
+  }
+
+  .seal::before {
+    content: '';
+    position: absolute;
+    inset: -16px;
+    border-radius: 50%;
+    border: 1px solid rgba(184, 146, 90, 0.4);
+    animation: sealPulse 2.8s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .seal::after {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+  }
+
+  @keyframes sealPulse {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50%      { transform: scale(1.12); opacity: 1; }
+  }
+
+  .seal:hover {
+    transform: scale(1.06);
+    box-shadow:
+      0 20px 44px rgba(184, 146, 90, 0.5),
+      inset 0 2px 6px rgba(255, 255, 255, 0.4),
+      inset 0 -4px 10px rgba(90, 60, 20, 0.3);
+  }
+
+  .seal:active { transform: scale(0.97); }
+
+  .seal-wrap.opened .seal {
+    opacity: 0;
+    transform: scale(0.5) rotate(-12deg);
+    pointer-events: none;
+  }
+
+  .reveal-message {
+    grid-area: 1 / 1;
+    max-width: 560px;
+    text-align: center;
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-size: clamp(19px, 5vw, 24px);
+    line-height: 1.85;
+    color: var(--deep);
+    padding: 0 20px;
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+    transition: opacity 1.1s ease, transform 1.1s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .seal-wrap.opened .reveal-message {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition-delay: 0.35s;
+    pointer-events: auto;
+  }
+
+  .wishes {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 24px;
+    text-align: center;
+  }
+
+  .wish {
+    padding: 40px 0;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1.1s ease, transform 1.1s ease;
+  }
+
+  .wish.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .wish + .wish {
+    border-top: 1px solid rgba(184, 146, 90, 0.28);
+  }
+
+  .wish h3 {
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-weight: 400;
+    font-size: clamp(24px, 6vw, 32px);
+    letter-spacing: 0.04em;
+    margin-bottom: 14px;
+    color: var(--deep);
+  }
+
+  .wish h3::after {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--gold);
+    margin: 16px auto 0;
+    opacity: 0.7;
+  }
+
+  .wish p {
+    font-family: 'Georgia', serif;
+    color: var(--muted);
+    font-size: clamp(15px, 4vw, 17px);
+    line-height: 1.85;
+    font-style: italic;
+    max-width: 460px;
+    margin: 20px auto 0;
+  }
+
+  .cake-section {
+    padding: 90px 0 60px;
+    text-align: center;
+  }
+
+  .cake-wrap {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 60px 20px 40px;
+  }
+
+  .cake {
+    position: relative;
+    width: 260px;
+    height: 230px;
+    margin: 0 auto;
+  }
+
+  .cake-plate {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 260px;
+    height: 16px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #e8ddc9, #c8a878);
+    box-shadow: 0 14px 30px rgba(44, 36, 27, 0.22);
+  }
+
+  .cake-tier {
+    position: absolute;
+    border-radius: 10px 10px 6px 6px;
+    box-shadow:
+      inset -14px -14px 32px rgba(90, 60, 20, 0.18),
+      inset 14px 14px 32px rgba(255, 250, 240, 0.35);
+  }
+
+  .cake-tier.bottom {
+    bottom: 10px;
+    left: 25px;
+    width: 210px;
+    height: 82px;
+    background: linear-gradient(180deg, #e8ddc9 0%, #d4b183 100%);
+  }
+
+  .cake-tier.top {
+    bottom: 88px;
+    left: 55px;
+    width: 150px;
+    height: 62px;
+    background: linear-gradient(180deg, #f2e8d5 0%, #ddbd8e 100%);
+  }
+
+  .cake-frosting {
+    position: absolute;
+    bottom: 138px;
+    left: 55px;
+    width: 150px;
+    height: 16px;
+    border-radius: 10px 10px 50% 50% / 10px 10px 100% 100%;
+    background: linear-gradient(180deg, #f7f3ec, #ece1c8);
+    box-shadow: inset 0 -4px 8px rgba(184, 146, 90, 0.15);
+    z-index: 2;
+  }
+
+  .cake-candles {
+    position: absolute;
+    bottom: 150px;
+    left: 55px;
+    width: 150px;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    z-index: 3;
+    padding: 0 6px;
+  }
+
+  .candle {
+    position: relative;
+    width: 8px;
+    height: 40px;
+    background: linear-gradient(180deg, #f7f3ec 0%, #e0d3b8 100%);
+    border-radius: 3px 3px 2px 2px;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    box-shadow: inset -2px 0 4px rgba(184, 146, 90, 0.25);
+    transition: transform 0.3s ease;
+  }
+
+  .candle:hover { transform: translateY(-2px); }
+
+  .candle .flame {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    width: 12px;
+    height: 18px;
+    margin-left: -6px;
+    margin-bottom: -2px;
+    background: radial-gradient(ellipse at 50% 80%, #fff2c8 0%, #ffc864 45%, #ff8a2c 75%, transparent 100%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: 0 0 18px rgba(255, 180, 80, 0.85), 0 0 32px rgba(255, 150, 50, 0.5);
+    animation: flameFlicker 0.5s ease-in-out infinite alternate;
+    transform-origin: center bottom;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .candle .flame::before {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    width: 4px;
+    height: 8px;
+    margin-left: -2px;
+    background: radial-gradient(ellipse, #fff8e0, transparent);
+    border-radius: 50%;
+  }
+
+  @keyframes flameFlicker {
+    from { transform: scaleY(1) scaleX(0.92) rotate(-2deg); }
+    to   { transform: scaleY(1.12) scaleX(1.05) rotate(2deg); }
+  }
+
+  .candle.blown .flame {
+    opacity: 0;
+    transform: scale(0.3);
+    animation: none;
+  }
+
+  .candle.blown::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+    border-radius: 50%;
+    background: rgba(140, 120, 100, 0.5);
+    pointer-events: none;
+    animation: smokeUp 1.6s ease-out forwards;
+  }
+
+  @keyframes smokeUp {
+    0% {
+      transform: translate(-50%, 0) scale(0.4);
+      opacity: 0.7;
+      filter: blur(0);
+    }
+    100% {
+      transform: translate(-50%, -70px) scale(2.8);
+      opacity: 0;
+      filter: blur(6px);
+    }
+  }
+
+  .cake-message {
+    margin-top: 44px;
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-size: clamp(22px, 5.5vw, 30px);
+    font-style: italic;
+    color: var(--gold);
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 1s ease, transform 1s ease;
+    padding: 0 20px;
+    min-height: 40px;
+  }
+
+  .cake-message.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .finale {
+    text-align: center;
+    padding: 60px 24px calc(120px + var(--safe-bottom));
+  }
+
+  .finale .big {
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-size: clamp(34px, 9vw, 72px);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--gold);
+    line-height: 1.2;
+    margin-bottom: 24px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1.2s ease, transform 1.2s ease;
+  }
+
+  .finale .big.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .finale .small {
+    font-family: 'Georgia', serif;
+    color: var(--muted);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-size: 10px;
+    padding-left: 0.3em;
+    opacity: 0;
+    transition: opacity 1.4s ease 0.4s;
+  }
+
+  .finale .small.visible { opacity: 1; }
+
+  .petal {
+    position: fixed;
+    border-radius: 50% 0 50% 50%;
+    background: rgba(184, 146, 90, 0.28);
+    pointer-events: none;
+    z-index: 0;
+    animation: fall linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes fall {
+    0% {
+      transform: translateY(-10vh) translateX(0) rotate(0deg);
+      opacity: 0;
+    }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% {
+      transform: translateY(110vh) translateX(60px) rotate(360deg);
+      opacity: 0;
+    }
+  }
+
+  .sparkle {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    pointer-events: none;
+    z-index: 200;
+    box-shadow: 0 0 10px rgba(184, 146, 90, 0.9);
+    animation: sparkleOut 1s ease-out forwards;
+    will-change: transform, opacity;
+  }
+
+  @keyframes sparkleOut {
+    from {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    to {
+      transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0);
+      opacity: 0;
+    }
+  }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(30, 24, 17, 0.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 150;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.45s ease, visibility 0.45s ease;
+    padding: 20px;
+    cursor: pointer;
+  }
+
+  .lightbox.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .lightbox img {
+    max-width: 92vw;
+    max-height: 88vh;
+    object-fit: contain;
+    border-radius: 3px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+    transform: scale(0.94);
+    transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+
+  .lightbox.open img { transform: scale(1); }
+
+  .lightbox-close {
+    position: absolute;
+    top: calc(20px + var(--safe-top));
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(247, 243, 236, 0.4);
+    background: rgba(255, 255, 255, 0.06);
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+
+  .lightbox-close::before,
+  .lightbox-close::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 18px;
+    height: 1px;
+    background: #f7f3ec;
+  }
+
+  .lightbox-close::before { transform: translate(-50%, -50%) rotate(45deg); }
+  .lightbox-close::after  { transform: translate(-50%, -50%) rotate(-45deg); }
+
+  .lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(247, 243, 236, 0.8);
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    .cursor-halo { display: none; }
+  }
+
+  @media (max-width: 1100px) {
+    .flora { width: 160px; opacity: 0.3; }
+    .flora-svg { width: 110px; }
+    .flora-left { left: -30px; }
+    .flora-right { right: -30px; }
+  }
+
+  @media (max-width: 900px) {
+    .flora { display: none; }
+  }
+
+  @media (max-width: 720px) {
+    section { padding: 64px 0; }
+    .section-title { margin-bottom: 40px; }
+
+    .gallery-wrap { padding: 0 0 6px; }
+
+    .gallery {
+      display: flex;
+      grid-template-columns: none;
+      gap: 16px;
+      padding: 0 20px 8px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      scroll-padding-left: 20px;
+    }
+
+    .gallery::-webkit-scrollbar { display: none; }
+
+    .gallery .photo {
+      flex: 0 0 84%;
+      max-width: 360px;
+      scroll-snap-align: center;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .gallery .photo:first-child { margin-left: 4px; }
+    .gallery .photo:last-child { margin-right: 6px; }
+
+    .photo::after { border-color: rgba(184, 146, 90, 0.5); }
+    .photo .tap-hint { opacity: 0.9; }
+
+    .seal { width: 104px; height: 104px; font-size: 36px; }
+
+    .wish { padding: 32px 0; }
+
+    .letter { padding: 0 22px; }
+
+    .cake { transform: scale(0.92); }
+
+    .gift-box { transform: scale(0.9); }
+  }
+
+  @media (max-width: 360px) {
+    .hero-sub { font-size: 14px; }
+    .gallery .photo { flex: 0 0 88%; }
+    .cake { transform: scale(0.82); }
+  }
+
+  @media (max-height: 520px) and (orientation: landscape) {
+    .hero {
+      min-height: auto;
+      padding: 60px 20px;
+    }
+    .scroll-hint { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .petal, .cursor-halo, .flora { display: none; }
+  }
+</style>
+</head>
+<body class="gift-mode">
+
+<div class="flora flora-left" aria-hidden="true">
+  <svg class="flora-svg flora-rose" viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+    <path d="M100 380 Q 100 280 100 200" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M100 320 Q 60 300 40 260 Q 75 260 100 295 Z" fill="currentColor" opacity="0.55"/>
+    <path d="M100 275 Q 140 255 160 215 Q 125 215 100 250 Z" fill="currentColor" opacity="0.55"/>
+    <g transform="translate(100, 100)">
+      <circle r="62" fill="currentColor" opacity="0.1"/>
+      <path d="M0 -62 A 62 62 0 0 1 54 31 A 62 62 0 0 1 -54 31 A 62 62 0 0 1 0 -62 Z"
+            fill="none" stroke="currentColor" stroke-width="2" opacity="0.55"/>
+      <path d="M0 -44 A 44 44 0 0 1 38 22 A 44 44 0 0 1 -38 22 A 44 44 0 0 1 0 -44 Z"
+            fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
+      <path d="M0 -27 A 27 27 0 0 1 23 14 A 27 27 0 0 1 -23 14 A 27 27 0 0 1 0 -27 Z"
+            fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+      <path d="M0 -14 A 14 14 0 0 1 12 7 A 14 14 0 0 1 -12 7 A 14 14 0 0 1 0 -14 Z"
+            fill="currentColor" opacity="0.55"/>
+    </g>
+  </svg>
+
+  <svg class="flora-svg flora-tulip" viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+    <path d="M100 380 L100 180" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M100 320 Q 50 280 30 200 Q 80 220 100 280 Z" fill="currentColor" opacity="0.5"/>
+    <path d="M100 300 Q 150 260 170 180 Q 120 200 100 260 Z" fill="currentColor" opacity="0.5"/>
+    <path d="M100 180 Q 60 160 45 100 Q 45 55 70 45 Q 80 90 85 130 Q 92 165 100 180 Z"
+          fill="currentColor" opacity="0.4"/>
+    <path d="M100 180 Q 140 160 155 100 Q 155 55 130 45 Q 120 90 115 130 Q 108 165 100 180 Z"
+          fill="currentColor" opacity="0.4"/>
+    <path d="M100 180 Q 130 170 145 120 Q 145 60 100 40 Q 55 60 55 120 Q 70 170 100 180 Z"
+          fill="currentColor" opacity="0.55"/>
+    <path d="M100 175 L100 55" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+    <path d="M75 170 Q 65 120 75 60" stroke="currentColor" stroke-width="1" fill="none" opacity="0.45"/>
+    <path d="M125 170 Q 135 120 125 60" stroke="currentColor" stroke-width="1" fill="none" opacity="0.45"/>
+  </svg>
+</div>
+
+<div class="flora flora-right" aria-hidden="true">
+  <svg class="flora-svg flora-tulip" viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+    <path d="M100 380 L100 180" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M100 320 Q 50 280 30 200 Q 80 220 100 280 Z" fill="currentColor" opacity="0.5"/>
+    <path d="M100 300 Q 150 260 170 180 Q 120 200 100 260 Z" fill="currentColor" opacity="0.5"/>
+    <path d="M100 180 Q 60 160 45 100 Q 45 55 70 45 Q 80 90 85 130 Q 92 165 100 180 Z"
+          fill="currentColor" opacity="0.4"/>
+    <path d="M100 180 Q 140 160 155 100 Q 155 55 130 45 Q 120 90 115 130 Q 108 165 100 180 Z"
+          fill="currentColor" opacity="0.4"/>
+    <path d="M100 180 Q 130 170 145 120 Q 145 60 100 40 Q 55 60 55 120 Q 70 170 100 180 Z"
+          fill="currentColor" opacity="0.55"/>
+    <path d="M100 175 L100 55" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+    <path d="M75 170 Q 65 120 75 60" stroke="currentColor" stroke-width="1" fill="none" opacity="0.45"/>
+    <path d="M125 170 Q 135 120 125 60" stroke="currentColor" stroke-width="1" fill="none" opacity="0.45"/>
+  </svg>
+
+  <svg class="flora-svg flora-rose" viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+    <path d="M100 380 Q 100 280 100 200" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M100 320 Q 60 300 40 260 Q 75 260 100 295 Z" fill="currentColor" opacity="0.55"/>
+    <path d="M100 275 Q 140 255 160 215 Q 125 215 100 250 Z" fill="currentColor" opacity="0.55"/>
+    <g transform="translate(100, 100)">
+      <circle r="62" fill="currentColor" opacity="0.1"/>
+      <path d="M0 -62 A 62 62 0 0 1 54 31 A 62 62 0 0 1 -54 31 A 62 62 0 0 1 0 -62 Z"
+            fill="none" stroke="currentColor" stroke-width="2" opacity="0.55"/>
+      <path d="M0 -44 A 44 44 0 0 1 38 22 A 44 44 0 0 1 -38 22 A 44 44 0 0 1 0 -44 Z"
+            fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
+      <path d="M0 -27 A 27 27 0 0 1 23 14 A 27 27 0 0 1 -23 14 A 27 27 0 0 1 0 -27 Z"
+            fill="none" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+      <path d="M0 -14 A 14 14 0 0 1 12 7 A 14 14 0 0 1 -12 7 A 14 14 0 0 1 0 -14 Z"
+            fill="currentColor" opacity="0.55"/>
+    </g>
+  </svg>
+</div>
+
+<div class="gift-overlay" id="giftOverlay">
+  <div class="gift-rays"></div>
+  <div class="gift-glow"></div>
+  <div class="gift-scene">
+    <div class="gift-box" id="giftBox" role="button" tabindex="0" aria-label="Открыть подарок">
+      <div class="gift-body"></div>
+      <div class="gift-ribbon-v"></div>
+      <div class="gift-ribbon-h"></div>
+      <div class="gift-lid"></div>
+      <div class="gift-bow">
+        <div class="gift-knot"></div>
+      </div>
+    </div>
+    <div class="gift-text">Открой</div>
+  </div>
+</div>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="cursor-halo"></div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-top">С днём рождения</div>
+    <div class="ornament"></div>
+    <div class="number">45</div>
+    <h1>
+      Мама
+      <span class="accent">с юбилеем</span>
+    </h1>
+    <p class="hero-sub">
+      Сделал тебе небольшую страничку. От себя.
+    </p>
+  </div>
+  <div class="scroll-hint">Листай вниз</div>
+</header>
+
+<section class="letter-section">
+  <div class="letter">
+    <p>Мам, поздравляю тебя с днём рождения.</p>
+    <p>Спасибо, что всегда рядом. За всё, что ты для меня делаешь. Я это замечаю.</p>
+    <p>Здоровья тебе и хорошего года.</p>
+    <p class="sig">Твой сын</p>
+  </div>
+</section>
+
+<section>
+  <div class="section-title">
+    <h2>Мгновения</h2>
+    <div class="ornament"></div>
+    <p>Коснись любой фотографии, чтобы открыть её.</p>
+  </div>
+
+  <div class="gallery-wrap">
+    <div class="gallery">
+      <figure class="photo">
+        <img src="photos/1.jpg" alt="" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="placeholder" style="display:none;">Добавь фото 1</div>
+        <div class="tap-hint"></div>
+      </figure>
+
+      <figure class="photo">
+        <img src="photos/2.jpg" alt="" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="placeholder" style="display:none;">Добавь фото 2</div>
+        <div class="tap-hint"></div>
+      </figure>
+
+      <figure class="photo">
+        <img src="photos/3.jpg" alt="" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="placeholder" style="display:none;">Добавь фото 3</div>
+        <div class="tap-hint"></div>
+      </figure>
+
+      <figure class="photo">
+        <img src="photos/4.jpg" alt="" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="placeholder" style="display:none;">Добавь фото 4</div>
+        <div class="tap-hint"></div>
+      </figure>
+
+      <figure class="photo">
+        <img src="photos/5.jpg" alt="" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="placeholder" style="display:none;">Добавь фото 5</div>
+        <div class="tap-hint"></div>
+      </figure>
+
+      <figure class="photo">
+        <img src="photos/6.jpg" alt="" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="placeholder" style="display:none;">Добавь фото 6</div>
+        <div class="tap-hint"></div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-title">
+    <h2>Спасибо</h2>
+    <div class="ornament"></div>
+    <p>Нажми, если хочешь прочитать.</p>
+  </div>
+
+  <div class="seal-wrap" id="sealWrap">
+    <button class="seal" id="seal" aria-label="Открыть">М</button>
+    <div class="reveal-message">
+      <p>Спасибо, что ты всегда рядом. За то, что помогаешь и поддерживаешь. Я это ценю, даже если не всегда говорю.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-title">
+    <h2>Желаю</h2>
+    <div class="ornament"></div>
+  </div>
+
+  <div class="wishes">
+    <div class="wish">
+      <h3>Здоровья</h3>
+      <p>Чтобы всё было хорошо.</p>
+    </div>
+    <div class="wish">
+      <h3>Поменьше нервов</h3>
+      <p>Особенно из-за меня. Постараюсь.</p>
+    </div>
+    <div class="wish">
+      <h3>Хорошего настроения</h3>
+      <p>Чтобы почаще улыбалась.</p>
+    </div>
+    <div class="wish">
+      <h3>Чтобы всё получалось</h3>
+      <p>То, что ты задумала.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cake-section">
+  <div class="section-title">
+    <h2>Торт</h2>
+    <div class="ornament"></div>
+    <p>Задуй свечи.</p>
+  </div>
+
+  <div class="cake-wrap">
+    <div class="cake">
+      <div class="cake-candles">
+        <button class="candle" aria-label="Свеча 1"><span class="flame"></span></button>
+        <button class="candle" aria-label="Свеча 2"><span class="flame"></span></button>
+        <button class="candle" aria-label="Свеча 3"><span class="flame"></span></button>
+        <button class="candle" aria-label="Свеча 4"><span class="flame"></span></button>
+        <button class="candle" aria-label="Свеча 5"><span class="flame"></span></button>
+      </div>
+      <div class="cake-tier top"></div>
+      <div class="cake-frosting"></div>
+      <div class="cake-tier bottom"></div>
+      <div class="cake-plate"></div>
+    </div>
+    <div class="cake-message" id="cakeMessage"></div>
+  </div>
+</section>
+
+<div class="finale">
+  <div class="big">С днём рождения, мам</div>
+  <div class="small">Твой сын</div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" aria-label="Закрыть"></button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+  const hasHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const isTouch = matchMedia('(hover: none)').matches;
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const root = document.documentElement;
+
+  function sparkleAt(x, y, count) {
+    if (reduceMotion) return;
+    count = count || 9;
+    for (let i = 0; i < count; i++) {
+      const s = document.createElement('span');
+      s.className = 'sparkle';
+      s.style.left = x + 'px';
+      s.style.top = y + 'px';
+      const angle = (Math.PI * 2 * i) / count + Math.random() * 0.7;
+      const dist = 36 + Math.random() * 70;
+      s.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+      s.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+      const scale = 0.5 + Math.random() * 0.9;
+      s.style.width = (5 * scale) + 'px';
+      s.style.height = (5 * scale) + 'px';
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 1100);
+    }
+  }
+
+  if (hasHover && !reduceMotion) {
+    document.addEventListener('pointermove', (e) => {
+      root.style.setProperty('--mx', e.clientX + 'px');
+      root.style.setProperty('--my', e.clientY + 'px');
+    });
+  }
+
+  const gift = document.getElementById('giftOverlay');
+  const giftBox = document.getElementById('giftBox');
+  let giftOpened = false;
+
+  function openGift() {
+    if (giftOpened) return;
+    giftOpened = true;
+    gift.classList.add('opening');
+
+    const rect = giftBox.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2 + 20;
+
+    if (!reduceMotion) {
+      for (let k = 0; k < 6; k++) {
+        setTimeout(() => {
+          sparkleAt(
+            cx + (Math.random() - 0.5) * 80,
+            cy + (Math.random() - 0.5) * 80,
+            10
+          );
+        }, k * 100);
+      }
+    }
+
+    setTimeout(() => {
+      gift.classList.add('opened');
+      document.body.classList.remove('gift-mode');
+      document.body.classList.add('revealed');
+
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+
+      void document.body.offsetHeight;
+      window.dispatchEvent(new Event('resize'));
+    }, 1500);
+
+    setTimeout(() => {
+      if (gift.parentNode) gift.remove();
+    }, 2400);
+  }
+
+  giftBox.addEventListener('click', openGift);
+  giftBox.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openGift();
+    }
+  });
+
+  const progressFill = document.getElementById('progressFill');
+  const heroInner = document.querySelector('.hero-inner');
+  let ticking = false;
+
+  function onScroll() {
+    const y = window.scrollY;
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    const p = h > 0 ? y / h : 0;
+    progressFill.style.width = (p * 100) + '%';
+
+    if (heroInner && !reduceMotion && !document.body.classList.contains('gift-mode')) {
+      const limit = window.innerHeight;
+      if (y < limit) {
+        const t = y / limit;
+        heroInner.style.transform = 'translateY(' + (y * 0.22) + 'px)';
+        heroInner.style.opacity = String(Math.max(0, 1 - t * 1.15));
+      }
+    }
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(onScroll);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  onScroll();
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, reduceMotion ? 0 : i * 70);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.letter p, .photo, .wish, .finale .big, .finale .small')
+    .forEach(el => observer.observe(el));
+
+  function spawnPetals() {
+    if (reduceMotion) return;
+    const count = isTouch ? 8 : (window.innerWidth < 900 ? 10 : 14);
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'petal';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = (14 + Math.random() * 16) + 's';
+      p.style.animationDelay = (Math.random() * 14) + 's';
+      p.style.opacity = 0.25 + Math.random() * 0.4;
+      const size = 5 + Math.random() * 7;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      document.body.appendChild(p);
+    }
+  }
+  spawnPetals();
+
+  document.addEventListener('click', (e) => {
+    if (document.body.classList.contains('gift-mode')) return;
+    if (e.target.closest('.photo, .seal, .candle, .lightbox, button, a')) return;
+    sparkleAt(e.clientX, e.clientY);
+  });
+
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+
+  document.querySelectorAll('.photo').forEach(photo => {
+    photo.addEventListener('click', () => {
+      const img = photo.querySelector('img');
+      if (!img || img.style.display === 'none') return;
+      lightboxImg.src = img.src;
+      lightboxImg.alt = img.alt;
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => { lightboxImg.src = ''; }, 400);
+  }
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox || e.target.classList.contains('lightbox-close')) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+  });
+
+  const sealWrap = document.getElementById('sealWrap');
+  const seal = document.getElementById('seal');
+
+  seal.addEventListener('click', () => {
+    sealWrap.classList.add('opened');
+    const rect = seal.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    if (!reduceMotion) {
+      for (let k = 0; k < 3; k++) {
+        setTimeout(() => sparkleAt(cx, cy, 12), k * 140);
+      }
+    }
+  });
+
+  const candles = document.querySelectorAll('.candle');
+  const cakeMessage = document.getElementById('cakeMessage');
+  let blownCount = 0;
+  let messageTimeout;
+
+  const cakePhrases = [
+    'Загадано',
+    'Пусть сбудется',
+    'Хорошо'
+  ];
+
+  candles.forEach(c => {
+    c.addEventListener('click', () => {
+      if (c.classList.contains('blown')) return;
+      c.classList.add('blown');
+
+      const rect = c.getBoundingClientRect();
+      if (!reduceMotion) sparkleAt(rect.left + rect.width / 2, rect.top - 6, 7);
+
+      blownCount++;
+
+      if (blownCount === candles.length) {
+        cakeMessage.textContent = cakePhrases[Math.floor(Math.random() * cakePhrases.length)];
+        setTimeout(() => cakeMessage.classList.add('visible'), 500);
+
+        clearTimeout(messageTimeout);
+        messageTimeout = setTimeout(() => {
+          cakeMessage.classList.remove('visible');
+          setTimeout(() => {
+            candles.forEach(c => c.classList.remove('blown'));
+            blownCount = 0;
+          }, 800);
+        }, 5200);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
